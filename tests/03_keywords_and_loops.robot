@@ -26,7 +26,6 @@ Find A Fruit
 
 Print Every Fruit
     [Documentation]    Loops through the list and logs each item.
-    # TODO 4: complete the FOR loop below so it logs every fruit
     FOR    ${fruit}    IN    @{FRUITS}
         Log    ${fruit}
     END
