@@ -37,5 +37,8 @@ After a run, open `results/report.html` in your browser.
 
 ## Progress
 - [x] Day 1 — first test running
-- [ ] Day 2 — variables and assertions
+- [x] Day 2 — variables and assertions
+- [x] Day 3 — keywords, lists and FOR loops
+- [x] Day 4 — dictionaries and IF/ELSE conditions
+- [x] Day 5 — reusable keywords (resource file), arguments, defaults, return values
 - [ ] ... (checked off as I progress)
