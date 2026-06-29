@@ -41,4 +41,5 @@ After a run, open `results/report.html` in your browser.
 - [x] Day 3 — keywords, lists and FOR loops
 - [x] Day 4 — dictionaries and IF/ELSE conditions
 - [x] Day 5 — reusable keywords (resource file), arguments, defaults, return values
+- [x] Day 6 — setup/teardown (suite & test) and tags
 - [ ] ... (checked off as I progress)
