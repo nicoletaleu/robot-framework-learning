@@ -22,7 +22,7 @@ robot-framework/
 ## How to run the tests
 ```bash
 # install (once)
-pip install robotframework
+pip install -r requirements.txt
 
 # run all tests
 robot --outputdir results tests/
@@ -43,4 +43,5 @@ After a run, open `results/report.html` in your browser.
 - [x] Day 5 — reusable keywords (resource file), arguments, defaults, return values
 - [x] Day 6 — setup/teardown (suite & test) and tags
 - [x] Day 7 — data-driven testing with test templates
+- [x] Day 8 — API testing with RequestsLibrary (GET/POST, status codes, JSON)
 - [ ] ... (checked off as I progress)
