@@ -44,4 +44,6 @@ After a run, open `results/report.html` in your browser.
 - [x] Day 6 — setup/teardown (suite & test) and tags
 - [x] Day 7 — data-driven testing with test templates
 - [x] Day 8 — API testing with RequestsLibrary (GET/POST, status codes, JSON)
+- [x] Day 9 — API CRUD (PUT/PATCH/DELETE) and custom headers
+- [x] Day 10 — chaining requests, passing data between tests, validating response shape
 - [ ] ... (checked off as I progress)
