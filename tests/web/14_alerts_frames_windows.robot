@@ -12,7 +12,7 @@ Test Tags        web
 
 *** Variables ***
 ${BASE_URL}      https://the-internet.herokuapp.com
-${HEADLESS}      True
+${HEADLESS}      ${False}
 
 
 *** Test Cases ***
