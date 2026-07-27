@@ -39,9 +39,11 @@ jobs:
       - name: Install Playwright browsers
         run: rfbrowser init
 
-      # Web suites default to headless=True - a CI machine has no screen.
+      # Some web suites set ${HEADLESS} to False so I can watch the browser locally.
+      # A CI runner has no screen, so headed Chromium would not start at all.
+      # --variable overrides the value in every suite, without touching the files.
       - name: Run the tests
-        run: robot --outputdir results tests/
+        run: robot --outputdir results --variable HEADLESS:True tests/
 
       # always() = upload even when the tests failed. That is exactly when I need
       # log.html to find out what went wrong.
