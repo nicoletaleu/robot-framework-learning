@@ -1,0 +1,53 @@
+# Day 15 - CI: let GitHub run the whole suite on every push.
+# A test that only runs on my laptop protects nobody. This workflow reruns
+# everything on a clean Ubuntu machine, so a broken test shows up in the repo
+# and not two weeks later.
+name: robot tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch: # adds a "Run workflow" button in the Actions tab
+
+jobs:
+  robot:
+    runs-on: ubuntu-latest
+
+    steps:
+      # The runner starts empty - it knows nothing about my code until I check it out.
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip # reuse downloaded wheels between runs
+
+      # The Browser library is Playwright underneath, and Playwright is Node.
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      # Downloads Chromium & co. Locally I ran this once; a CI runner is a brand
+      # new machine every time, so it has to happen here too.
+      - name: Install Playwright browsers
+        run: rfbrowser init
+
+      # Web suites default to headless=True - a CI machine has no screen.
+      - name: Run the tests
+        run: robot --outputdir results tests/
+
+      # always() = upload even when the tests failed. That is exactly when I need
+      # log.html to find out what went wrong.
+      - name: Upload the reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: robot-results
+          path: results/

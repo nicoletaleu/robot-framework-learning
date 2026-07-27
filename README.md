@@ -1,5 +1,7 @@
 # Robot Framework — Test Automation Learning
 
+[![robot tests](https://github.com/nicoletalucia/robot-framework-learning/actions/workflows/tests.yml/badge.svg)](https://github.com/nicoletalucia/robot-framework-learning/actions/workflows/tests.yml)
+
 A repository where I learn test automation with **Robot Framework** (Python).
 
 ## Stack
@@ -11,6 +13,7 @@ A repository where I learn test automation with **Robot Framework** (Python).
 ## Structure
 ```
 robot-framework/
+├── .github/workflows/  # CI — runs the suites on every push
 ├── tests/          # test suites (.robot)
 │   ├── web/        # UI tests
 │   └── api/        # API tests
@@ -23,6 +26,7 @@ robot-framework/
 ```bash
 # install (once)
 pip install -r requirements.txt
+rfbrowser init          # downloads the browsers used by the web tests
 
 # run all tests
 robot --outputdir results tests/
@@ -46,4 +50,9 @@ After a run, open `results/report.html` in your browser.
 - [x] Day 8 — API testing with RequestsLibrary (GET/POST, status codes, JSON)
 - [x] Day 9 — API CRUD (PUT/PATCH/DELETE) and custom headers
 - [x] Day 10 — chaining requests, passing data between tests, validating response shape
+- [x] Day 11 — first web UI test with the Browser library (open, click, fill, assert)
+- [x] Day 12 — web interactions: dropdowns, checkboxes, dynamic waits, tables, screenshots
+- [x] Day 13 — page objects: login page resource + data-driven login tests
+- [x] Day 14 — alerts, iframes, new tabs, file upload
+- [ ] Day 15 — CI with GitHub Actions: every push runs the whole suite
 - [ ] ... (checked off as I progress)

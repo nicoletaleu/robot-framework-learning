@@ -13,3 +13,4 @@ venv/
 
 # Browser library
 node_modules/
+playwright-log.txt
