@@ -54,5 +54,5 @@ After a run, open `results/report.html` in your browser.
 - [x] Day 12 — web interactions: dropdowns, checkboxes, dynamic waits, tables, screenshots
 - [x] Day 13 — page objects: login page resource + data-driven login tests
 - [x] Day 14 — alerts, iframes, new tabs, file upload
-- [ ] Day 15 — CI with GitHub Actions: every push runs the whole suite
+- [x] Day 15 — CI with GitHub Actions + explicit waits (wait for a state, never a fixed time)
 - [ ] ... (checked off as I progress)
