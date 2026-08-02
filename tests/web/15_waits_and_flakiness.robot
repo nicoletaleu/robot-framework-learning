@@ -12,7 +12,6 @@ Test Tags        web    wait
 *** Variables ***
 ${BASE_URL}      https://the-internet.herokuapp.com
 ${HEADLESS}      ${False}
-${Slow}    8s
 
 
 *** Test Cases ***
