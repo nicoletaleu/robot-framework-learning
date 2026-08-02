@@ -18,6 +18,7 @@ robot-framework/
 │   ├── web/        # UI tests
 │   └── api/        # API tests
 ├── resources/      # reusable keywords and variables (.resource)
+├── libraries/      # my own keywords, written in Python (.py)
 ├── results/        # generated reports (log.html, report.html) — git-ignored
 └── README.md
 ```
@@ -55,4 +56,5 @@ After a run, open `results/report.html` in your browser.
 - [x] Day 13 — page objects: login page resource + data-driven login tests
 - [x] Day 14 — alerts, iframes, new tabs, file upload
 - [x] Day 15 — CI with GitHub Actions + explicit waits (wait for a state, never a fixed time)
+- [x] Day 16 — my own Python library: custom keywords, type conversion, test data
 - [ ] ... (checked off as I progress)
