@@ -19,6 +19,8 @@ robot-framework/
 │   └── api/        # API tests
 ├── resources/      # reusable keywords and variables (.resource)
 ├── libraries/      # my own keywords, written in Python (.py)
+├── variables/      # environment config as a variable file (.py)
+├── data/           # test data kept out of the suites (.csv, .json)
 ├── results/        # generated reports (log.html, report.html) — git-ignored
 └── README.md
 ```
@@ -37,6 +39,9 @@ robot --outputdir results tests/01_first_test.robot
 
 # run only tests with a given tag
 robot --include smoke tests/
+
+# run against another environment (see variables/config.py)
+robot --variablefile variables/config.py:staging tests/
 ```
 After a run, open `results/report.html` in your browser.
 
@@ -57,4 +62,5 @@ After a run, open `results/report.html` in your browser.
 - [x] Day 14 — alerts, iframes, new tabs, file upload
 - [x] Day 15 — CI with GitHub Actions + explicit waits (wait for a state, never a fixed time)
 - [x] Day 16 — my own Python library: custom keywords, type conversion, test data
+- [x] Day 17 — test data outside the suites: variable files, JSON and CSV
 - [ ] ... (checked off as I progress)

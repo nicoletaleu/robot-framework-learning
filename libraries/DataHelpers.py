@@ -10,6 +10,7 @@ Imported with:  Library    ../libraries/DataHelpers.py
   - type hints convert arguments: length: int gets the string "12" as 12
 """
 
+import csv
 import random
 import re
 import string
@@ -86,6 +87,21 @@ class DataHelpers:
     def emails_generated_so_far(self) -> int:
         """Emails handed out since the run started. Only meaningful because scope is GLOBAL."""
         return self._emails_generated
+
+    @keyword
+    def read_csv_rows(self, path: str) -> list:
+        """Reads a CSV with a header row into a list of dicts.
+
+        Day 17: the data lives in a file, not in the .robot suite. Pass an
+        absolute path (${CURDIR} in the suite) so the run does not depend on
+        the directory robot was started from.
+        """
+        with open(path, newline="", encoding="utf-8") as handle:
+            rows = list(csv.DictReader(handle))
+        if not rows:
+            raise ValueError(f"No data rows in {path}")
+        logger.info(f"Read {len(rows)} rows from {path}")
+        return rows
 
     @keyword
     def log_users_as_a_table(self, users: list) -> None:

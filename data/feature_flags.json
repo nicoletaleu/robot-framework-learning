@@ -1,0 +1,9 @@
+{
+  "PRODUCT": "robot-framework-learning",
+  "FEATURE_FLAGS": {
+    "new_checkout": true,
+    "dark_mode": false
+  },
+  "SUPPORTED_LOCALES": ["ro", "en", "de"],
+  "MAX_LOGIN_ATTEMPTS": 3
+}
