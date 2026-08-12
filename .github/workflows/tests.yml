@@ -46,8 +46,17 @@ jobs:
       # Some web suites set ${HEADLESS} to False so I can watch the browser locally.
       # A CI runner has no screen, so headed Chromium would not start at all.
       # --variable overrides the value in every suite, without touching the files.
+      #
+      # Day 19: --listener attaches RunListener to every worker. It tags anything
+      # slower than 2s and writes a per-process listener_summary_*.json into
+      # results/, which the artifact below picks up. It also un-skips the two
+      # tests in suite 19 that need a live listener to check.
       - name: Run the tests in parallel
-        run: pabot --processes 4 --outputdir results --variable HEADLESS:True tests/
+        run: >-
+          pabot --processes 4 --outputdir results
+          --variable HEADLESS:True
+          --listener libraries/RunListener.py:2.0
+          tests/
 
       # always() = upload even when the tests failed. That is exactly when I need
       # log.html to find out what went wrong.

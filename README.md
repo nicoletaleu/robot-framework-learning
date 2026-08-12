@@ -19,9 +19,9 @@ robot-framework/
 │   ├── web/        # UI tests
 │   └── api/        # API tests
 ├── resources/      # reusable keywords and variables (.resource)
-├── libraries/      # my own keywords, written in Python (.py)
+├── libraries/      # my own keywords + listeners, written in Python (.py)
 ├── variables/      # environment config as a variable file (.py)
-├── data/           # test data kept out of the suites (.csv, .json)
+├── data/           # test data kept out of the suites (.csv, .json, .robot)
 ├── results/        # generated reports (log.html, report.html) — git-ignored
 └── README.md
 ```
@@ -49,6 +49,10 @@ pabot --processes 4 --outputdir results tests/
 
 # split individual tests across processes, not just whole suites
 pabot --testlevelsplit --processes 4 --outputdir results tests/
+
+# attach the listener: tags every test slower than 0.5s and writes a
+# per-process listener_summary_*.json next to the report
+robot --listener libraries/RunListener.py:0.5 --outputdir results tests/
 ```
 After a run, open `results/report.html` in your browser. `pabot` writes each
 process into `results/pabot_results/` and merges them into the same
@@ -58,6 +62,14 @@ On this repo four processes take the full run from ~104s to ~54s. It does not
 get much better than that: the slowest single suite is ~48s, and no number of
 processes can finish the run sooner than its longest suite. Splitting that suite
 up — or `--testlevelsplit` — is what buys the next step.
+
+A **listener** is the other half of that picture: a library waits to be called by
+a test, a listener is called by Robot around every suite and every test, and the
+suites never know. It attaches on the command line, so one file applies to every
+suite in the repo — including the ones written before it existed. That is where
+cross-cutting work belongs: timing, a screenshot on failure, an extra tag.
+`libraries/RunListener.py` is mine; `tests/19_listeners.robot` tests it by
+starting a child run and reading back what it recorded.
 
 ## Progress
 - [x] Day 1 — first test running
@@ -78,4 +90,13 @@ up — or `--testlevelsplit` — is what buys the next step.
 - [x] Day 16 — my own Python library: custom keywords, type conversion, test data
 - [x] Day 17 — test data outside the suites: variable files, JSON and CSV
 - [x] Day 18 — parallel execution with pabot: writing tests that share nothing
-- [ ] ... (checked off as I progress)
+- [x] Day 19 — listeners: watching the run from outside the suites (Listener API v3)
+
+## Next up
+A working list, not a contract — it gets reordered as I go, but it lives here so
+the next day is never a guess.
+- [ ] Day 20 — rerunning only what failed: `--rerunfailed`, `rebot --merge`, and what a
+      retried test should look like in the report
+- [ ] Day 21 — stubbing the API under test, so `tests/api/` stops depending on a live service
+- [ ] Day 22 — checking the database behind the API: a POST that returns 201 and writes nothing
+- [ ] Day 23 — tags as a strategy: smoke vs regression, and what CI runs on a pull request
