@@ -11,6 +11,7 @@ Imported with:  Library    ../libraries/DataHelpers.py
 """
 
 import csv
+import os
 import random
 import re
 import string
@@ -115,6 +116,29 @@ class DataHelpers:
             f"{rows}</table>",
             html=True,
         )
+
+    @keyword
+    def current_process_id(self) -> int:
+        """The id of the OS process running this test.
+
+        Day 18: `robot` is one process for the whole run, so this is the same
+        number everywhere. `pabot` starts one process per suite, so each worker
+        reports a different number.
+        """
+        return os.getpid()
+
+    @keyword
+    def unique_artifact_name(self, filename: str) -> str:
+        """Inserts the process id into a file name, before the extension.
+
+        Two pabot workers that both write "screenshot.png" into the same folder
+        overwrite each other, and the last one silently wins. A name carrying
+        the pid cannot collide, whatever the process count is.
+        """
+        stem, dot, suffix = filename.rpartition(".")
+        if not dot:
+            return f"{filename}_{os.getpid()}"
+        return f"{stem}_{os.getpid()}.{suffix}"
 
     # No @keyword -> not callable from a suite, despite the ordinary name.
     def slugify(self, text: str) -> str:

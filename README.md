@@ -8,6 +8,7 @@ A repository where I learn test automation with **Robot Framework** (Python).
 - Robot Framework
 - Browser library (Playwright) — web testing
 - requests library — API testing
+- pabot — parallel execution
 - GitHub Actions — CI
 
 ## Structure
@@ -42,8 +43,21 @@ robot --include smoke tests/
 
 # run against another environment (see variables/config.py)
 robot --variablefile variables/config.py:staging tests/
+
+# run in parallel — one process per suite, four at a time
+pabot --processes 4 --outputdir results tests/
+
+# split individual tests across processes, not just whole suites
+pabot --testlevelsplit --processes 4 --outputdir results tests/
 ```
-After a run, open `results/report.html` in your browser.
+After a run, open `results/report.html` in your browser. `pabot` writes each
+process into `results/pabot_results/` and merges them into the same
+`report.html`, so the reports look identical either way.
+
+On this repo four processes take the full run from ~104s to ~54s. It does not
+get much better than that: the slowest single suite is ~48s, and no number of
+processes can finish the run sooner than its longest suite. Splitting that suite
+up — or `--testlevelsplit` — is what buys the next step.
 
 ## Progress
 - [x] Day 1 — first test running
@@ -63,4 +77,5 @@ After a run, open `results/report.html` in your browser.
 - [x] Day 15 — CI with GitHub Actions + explicit waits (wait for a state, never a fixed time)
 - [x] Day 16 — my own Python library: custom keywords, type conversion, test data
 - [x] Day 17 — test data outside the suites: variable files, JSON and CSV
+- [x] Day 18 — parallel execution with pabot: writing tests that share nothing
 - [ ] ... (checked off as I progress)

@@ -14,3 +14,6 @@ venv/
 # Browser library
 node_modules/
 playwright-log.txt
+
+# pabot's cache of the last run's suite order and timings
+.pabotsuitenames
