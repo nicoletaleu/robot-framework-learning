@@ -53,6 +53,12 @@ pabot --testlevelsplit --processes 4 --outputdir results tests/
 # attach the listener: tags every test slower than 0.5s and writes a
 # per-process listener_summary_*.json next to the report
 robot --listener libraries/RunListener.py:0.5 --outputdir results tests/
+
+# after a red run — rerun only the tests that failed, then fold the result
+# back into the original report (rebot writes no output.xml unless asked)
+robot --rerunfailed results/output.xml --outputdir results/rerun tests/
+rebot --merge --output output.xml --outputdir results/merged \
+      results/output.xml results/rerun/output.xml
 ```
 After a run, open `results/report.html` in your browser. `pabot` writes each
 process into `results/pabot_results/` and merges them into the same
@@ -70,6 +76,16 @@ suite in the repo — including the ones written before it existed. That is wher
 cross-cutting work belongs: timing, a screenshot on failure, an extra tag.
 `libraries/RunListener.py` is mine; `tests/19_listeners.robot` tests it by
 starting a child run and reading back what it recorded.
+
+`output.xml` is the third thing worth knowing about. `report.html` is for people;
+`output.xml` is the same run as data, and Robot ships the parser
+(`robot.api.ExecutionResult`, wrapped in `libraries/ResultHelpers.py`). That is
+what makes `--rerunfailed` possible — it reads the previous `output.xml` and
+picks the failed tests out of it, so nobody has to list them. The rerun alone is
+a partial report, though: it never saw the tests that passed. `rebot --merge`
+folds it back in, matching on test name, and writes into the merged test *why* it
+is green — old status, old message. A test that passed on the second attempt
+never reads as a test that passed.
 
 ## Progress
 - [x] Day 1 — first test running
@@ -91,12 +107,12 @@ starting a child run and reading back what it recorded.
 - [x] Day 17 — test data outside the suites: variable files, JSON and CSV
 - [x] Day 18 — parallel execution with pabot: writing tests that share nothing
 - [x] Day 19 — listeners: watching the run from outside the suites (Listener API v3)
+- [x] Day 20 — rerunning only what failed: `--rerunfailed`, `rebot --merge`, `output.xml` as data
 
 ## Next up
 A working list, not a contract — it gets reordered as I go, but it lives here so
 the next day is never a guess.
-- [ ] Day 20 — rerunning only what failed: `--rerunfailed`, `rebot --merge`, and what a
-      retried test should look like in the report
 - [ ] Day 21 — stubbing the API under test, so `tests/api/` stops depending on a live service
 - [ ] Day 22 — checking the database behind the API: a POST that returns 201 and writes nothing
 - [ ] Day 23 — tags as a strategy: smoke vs regression, and what CI runs on a pull request
+- [ ] Day 24 — a flaky test on purpose: finding the cause instead of retrying it away
