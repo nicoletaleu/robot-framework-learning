@@ -87,6 +87,16 @@ folds it back in, matching on test name, and writes into the merged test *why* i
 is green — old status, old message. A test that passed on the second attempt
 never reads as a test that passed.
 
+The API suites talk to a real service over the internet, which is fine for
+learning the requests and wrong as a foundation — they break when the internet
+does, and a live service will not return a 500 because a test asked politely.
+`libraries/StubServer.py` starts a real HTTP server inside the run that answers
+what the test told it to. The response being mine is the obvious half; the useful
+half is that the **request** becomes visible, so a test can assert what the client
+actually sent rather than only what came back. What a stub cannot do is tell me
+the real service still behaves that way, which is why a few tests against the
+live API stay.
+
 ## Progress
 - [x] Day 1 — first test running
 - [x] Day 2 — variables and assertions
@@ -108,11 +118,12 @@ never reads as a test that passed.
 - [x] Day 18 — parallel execution with pabot: writing tests that share nothing
 - [x] Day 19 — listeners: watching the run from outside the suites (Listener API v3)
 - [x] Day 20 — rerunning only what failed: `--rerunfailed`, `rebot --merge`, `output.xml` as data
+- [x] Day 21 — stubbing the service under test: a fake HTTP server the tests control
 
 ## Next up
 A working list, not a contract — it gets reordered as I go, but it lives here so
 the next day is never a guess.
-- [ ] Day 21 — stubbing the API under test, so `tests/api/` stops depending on a live service
 - [ ] Day 22 — checking the database behind the API: a POST that returns 201 and writes nothing
 - [ ] Day 23 — tags as a strategy: smoke vs regression, and what CI runs on a pull request
 - [ ] Day 24 — a flaky test on purpose: finding the cause instead of retrying it away
+- [ ] Day 25 — contract tests: keeping the stub honest about what the real API returns
