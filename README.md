@@ -97,6 +97,15 @@ actually sent rather than only what came back. What a stub cannot do is tell me
 the real service still behaves that way, which is why a few tests against the
 live API stay.
 
+A response is a claim, not a receipt. `tests/api/22_database_checks.robot` runs a
+small service (`libraries/OrderService.py`) with a SQLite database behind it and
+faults that can be switched on: a POST that answers `201` and stores nothing, a
+`DELETE` that answers `204` and deletes nothing, a row written with the wrong
+values in it. Every assertion an API-only test would make passes in all three
+cases. Checking the other end is what turns a test of the conversation into a
+test of the system — and, symmetrically, a row the test planted itself proves
+nothing about the API, so neither end is worth much alone.
+
 ## Progress
 - [x] Day 1 — first test running
 - [x] Day 2 — variables and assertions
@@ -119,11 +128,11 @@ live API stay.
 - [x] Day 19 — listeners: watching the run from outside the suites (Listener API v3)
 - [x] Day 20 — rerunning only what failed: `--rerunfailed`, `rebot --merge`, `output.xml` as data
 - [x] Day 21 — stubbing the service under test: a fake HTTP server the tests control
+- [x] Day 22 — checking the database behind the API: a POST that returns 201 and writes nothing
 
 ## Next up
 A working list, not a contract — it gets reordered as I go, but it lives here so
 the next day is never a guess.
-- [ ] Day 22 — checking the database behind the API: a POST that returns 201 and writes nothing
 - [ ] Day 23 — tags as a strategy: smoke vs regression, and what CI runs on a pull request
 - [ ] Day 24 — a flaky test on purpose: finding the cause instead of retrying it away
 - [ ] Day 25 — contract tests: keeping the stub honest about what the real API returns
