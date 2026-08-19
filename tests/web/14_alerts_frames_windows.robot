@@ -64,8 +64,10 @@ Work Inside An Iframe
     Should Contain    ${text}    Your content goes here.
     # No prefix: this heading is on the outer page.
     Get Text    h3    ==    An iFrame containing the TinyMCE WYSIWYG Editor
-    # Same selector without the prefix matches the outer page - separate documents.
-    ${outer_text}=    Get Text    p
+    # The outer document cannot see the iframe's text at all. Asserted on the
+    # whole body: how many <p> the page has is the site's business and it does
+    # change, so anchoring on that made the test fail for the wrong reason.
+    ${outer_text}=    Get Text    body
     Should Not Contain    ${outer_text}    Your content goes here.
 
 Switch To A Newly Opened Tab
