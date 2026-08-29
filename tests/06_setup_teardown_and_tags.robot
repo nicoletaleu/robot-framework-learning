@@ -19,7 +19,9 @@ Suite Setup      Log    === Starting the cart test suite ===
 Suite Teardown   Log    === Finished the cart test suite ===
 Test Setup       Reset The Cart
 Test Teardown    Log    Test finished, cart had ${cart_count} item(s).
-Force Tags       cart
+# Force Tags is the old name for Test Tags and is deprecated - one setting,
+# not two, or they quietly compete.
+Test Tags        cart    unit
 
 
 *** Variables ***

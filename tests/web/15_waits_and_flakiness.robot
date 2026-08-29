@@ -17,7 +17,7 @@ ${HEADLESS}      ${False}
 *** Test Cases ***
 Auto-Wait Handles Most Cases
     [Documentation]    Browser library auto-waits before every action, so the happy path often needs no explicit wait.
-    [Tags]    autowait
+    [Tags]    autowait    smoke
     Go To    ${BASE_URL}/dynamic_loading/2
     Click    css=#start button
     # No Wait keyword here on purpose: Get Text auto-waits for #finish to appear.

@@ -19,7 +19,7 @@ ${HEADLESS}      False
 *** Test Cases ***
 Select An Option From A Dropdown
     [Documentation]    Pick a value from a <select> dropdown and confirm it is selected.
-    [Tags]    web    dropdown
+    [Tags]    web    dropdown    smoke
     Go To    ${BASE_URL}/dropdown
     # Select the option whose visible label is "Option 2".
     Select Options By    id=dropdown    label    Option 2

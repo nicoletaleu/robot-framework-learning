@@ -20,12 +20,22 @@ class ResultHelpers:
     def tests_in_output(self, path: str) -> list:
         """Every test in an output.xml, as a list of dicts.
 
-        Keys: name, status, message. `message` is where a merged run explains
-        itself - rebot writes the old status into it when a test was re-executed.
+        Keys: name, suite, tags, status, message. `message` is where a merged
+        run explains itself - rebot writes the old status into it when a test
+        was re-executed.
+
+        Day 23 reads this from a --dryrun output.xml, where nothing was executed
+        but every test and every tag is already there.
         """
         suite = ExecutionResult(path).suite
         return [
-            {"name": test.name, "status": test.status, "message": test.message}
+            {
+                "name": test.name,
+                "suite": test.parent.name,
+                "tags": list(test.tags),
+                "status": test.status,
+                "message": test.message,
+            }
             for test in self._walk(suite)
         ]
 

@@ -2,6 +2,7 @@
 Documentation    Day 4 - Dictionaries and conditions (IF / ELSE).
 ...              Run with:  robot --outputdir results tests/04_dictionaries_and_conditions.robot
 Library          Collections
+Test Tags        unit
 
 
 *** Variables ***
@@ -19,6 +20,7 @@ Show User Details
 
 Check A Dictionary Has A Key
     [Documentation]    Verifies a key exists in the dictionary.
+    [Tags]    smoke
     Dictionary Should Contain Key    ${USER}    age
     Dictionary Should Contain Value    ${USER}    Suceava
 

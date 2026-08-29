@@ -1,6 +1,7 @@
 *** Settings ***
 Documentation    My first test in Robot Framework.
 ...              Run with:  robot --outputdir results tests/01_first_test.robot
+Test Tags        unit
 
 
 *** Variables ***
@@ -12,6 +13,7 @@ ${NUMBER_B}     3
 *** Test Cases ***
 First Test Says Hello
     [Documentation]    Verifies a simple message.
+    [Tags]    smoke
     Log    ${MESSAGE}
     Should Contain    ${MESSAGE}    Robot Framework
 

@@ -8,7 +8,7 @@ Documentation    Day 18 - running the suites in PARALLEL with pabot.
 Library          ../libraries/DataHelpers.py
 Library          Collections
 Library          OperatingSystem
-Test Tags        parallel
+Test Tags        parallel    unit
 
 
 *** Variables ***

@@ -3,11 +3,13 @@ Documentation    Day 5 - Reusable keywords from a resource file:
 ...              multiple arguments, default values and RETURN values.
 ...              Run with:  robot --outputdir results tests/05_resources_and_return_values.robot
 Resource         ../resources/common.resource
+Test Tags        unit
 
 
 *** Test Cases ***
 Add Numbers And Use The Result
     [Documentation]    Calls a keyword that returns a value and stores it.
+    [Tags]    smoke
     ${result}=    Add Two Numbers    2    3
     Should Be Equal As Numbers    ${result}    5
 

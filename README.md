@@ -38,8 +38,12 @@ robot --outputdir results tests/
 # run a single suite
 robot --outputdir results tests/01_first_test.robot
 
-# run only tests with a given tag
+# run only tests with a given tag — this is what a pull request runs
 robot --include smoke tests/
+
+# tag patterns: AND, OR, NOT, in one argument
+robot --include smokeANDapi tests/
+robot --exclude web tests/
 
 # run against another environment (see variables/config.py)
 robot --variablefile variables/config.py:staging tests/
@@ -106,6 +110,25 @@ cases. Checking the other end is what turns a test of the conversation into a
 test of the system — and, symmetrically, a row the test planted itself proves
 nothing about the API, so neither end is worth much alone.
 
+## Tags
+Tags accumulate on their own. Before Day 23 this repo had 44 of them, most used
+exactly once, and 23 tests carrying none at all — which makes `--include` a
+guess rather than a tool. The scheme now is deliberately small:
+
+| Tag | Rule |
+|---|---|
+| `unit`, `api`, `web` | **layer** — every test carries exactly one, so the three add up to the repo and never overlap |
+| `smoke` | the subset that runs on every pull request: at least one per suite, and a minority overall |
+| anything else | free-form feature tags (`login`, `iframe`, `database`) — useful for finding things, never for selecting a run |
+
+`tests/23_tag_strategy.robot` enforces all of that. It runs `robot --dryrun` over
+the repo, which lists every test and every tag in about two seconds without
+executing anything, and fails if a test slips through untagged or if `smoke`
+grows past a ceiling. A scheme nobody checks goes back to being debris.
+
+CI follows it: a pull request runs `--include smoke` — 43 tests, ~21s — and the
+full 150 run on the way into `main`.
+
 ## Progress
 - [x] Day 1 — first test running
 - [x] Day 2 — variables and assertions
@@ -129,10 +152,11 @@ nothing about the API, so neither end is worth much alone.
 - [x] Day 20 — rerunning only what failed: `--rerunfailed`, `rebot --merge`, `output.xml` as data
 - [x] Day 21 — stubbing the service under test: a fake HTTP server the tests control
 - [x] Day 22 — checking the database behind the API: a POST that returns 201 and writes nothing
+- [x] Day 23 — tags as a strategy: one layer tag per test, smoke on every pull request
 
 ## Next up
 A working list, not a contract — it gets reordered as I go, but it lives here so
 the next day is never a guess.
-- [ ] Day 23 — tags as a strategy: smoke vs regression, and what CI runs on a pull request
 - [ ] Day 24 — a flaky test on purpose: finding the cause instead of retrying it away
 - [ ] Day 25 — contract tests: keeping the stub honest about what the real API returns
+- [ ] Day 26 — what a failure report should contain: screenshots, page state, and the request that caused it

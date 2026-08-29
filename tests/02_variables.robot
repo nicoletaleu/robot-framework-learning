@@ -1,6 +1,7 @@
 *** Settings ***
 Documentation    Day 2 - Variables and assertions.
 ...              Run with:  robot --outputdir results tests/02_variables.robot
+Test Tags        unit
 
 
 *** Variables ***
@@ -18,6 +19,7 @@ Show My Data
 
 Check My Name
     [Documentation]    Verifies the name is correct.
+    [Tags]    smoke
     Should Be Equal    ${NAME}    Nicoleta
 
 

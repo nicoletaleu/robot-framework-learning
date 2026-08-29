@@ -6,7 +6,7 @@ Documentation    Day 16 - writing my OWN keywords in Python: ../libraries/DataHe
 Library          ../libraries/DataHelpers.py
 Library          Collections
 Library          String
-Test Tags        custom-library
+Test Tags        custom-library    unit
 
 
 *** Variables ***

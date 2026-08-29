@@ -15,7 +15,7 @@ ${SESSION}       jsonplaceholder
 *** Test Cases ***
 Capture An Id And Reuse It In The Next Request
     [Documentation]    Read a field from response #1, feed it into the URL of response #2.
-    [Tags]    api    chaining
+    [Tags]    api    chaining    smoke
     ${post}=    GET On Session    ${SESSION}    /posts/1
     ${user_id}=    Set Variable    ${post.json()}[userId]
     # Use that id to fetch the matching user - this is the chain.

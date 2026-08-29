@@ -51,7 +51,22 @@ jobs:
       # slower than 2s and writes a per-process listener_summary_*.json into
       # results/, which the artifact below picks up. It also un-skips the two
       # tests in suite 19 that need a live listener to check.
-      - name: Run the tests in parallel
+      #
+      # Day 23: a pull request runs the smoke set only - fast feedback while the
+      # change is still being written. Everything runs on the way into main, and
+      # on the manual button. Two steps rather than one clever line, because the
+      # thing a workflow most needs to be is readable at a glance.
+      - name: Run the smoke tests (pull request)
+        if: github.event_name == 'pull_request'
+        run: >-
+          pabot --processes 4 --outputdir results
+          --variable HEADLESS:True
+          --listener libraries/RunListener.py:2.0
+          --include smoke
+          tests/
+
+      - name: Run every test (main, or on demand)
+        if: github.event_name != 'pull_request'
         run: >-
           pabot --processes 4 --outputdir results
           --variable HEADLESS:True

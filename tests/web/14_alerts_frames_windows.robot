@@ -19,7 +19,7 @@ ${HEADLESS}      ${False}
 Accept A Simple Alert
     [Documentation]    An alert blocks the page, so say how to answer it BEFORE the click.
     ...                Handle Future Dialogs = standing rule for this page.
-    [Tags]    alert
+    [Tags]    alert    smoke
     Go To    ${BASE_URL}/javascript_alerts
     Handle Future Dialogs    action=accept
     Click    text=Click for JS Alert

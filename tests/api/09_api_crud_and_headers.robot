@@ -14,7 +14,7 @@ ${SESSION}       jsonplaceholder
 *** Test Cases ***
 Update A Post Fully With PUT
     [Documentation]    PUT replaces the WHOLE resource; returns 200 + echoed body.
-    [Tags]    api    put    update
+    [Tags]    api    put    update    smoke
     ${payload}=    Create Dictionary    id=${1}    title=Updated title    body=Updated body    userId=${1}
     ${response}=    PUT On Session    ${SESSION}    /posts/1    json=${payload}
     Status Should Be    200    ${response}

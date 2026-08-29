@@ -2,6 +2,7 @@
 Documentation    Day 3 - User keywords, lists and FOR loops.
 ...              Run with:  robot --outputdir results tests/03_keywords_and_loops.robot
 Library          Collections
+Test Tags        unit
 
 
 *** Variables ***
@@ -13,6 +14,7 @@ ${GREETING}     Hello
 *** Test Cases ***
 Greet A Person
     [Documentation]    Calls a keyword we wrote ourselves.
+    [Tags]    smoke
     Greet    Nicoleta
 
 Count The Fruits

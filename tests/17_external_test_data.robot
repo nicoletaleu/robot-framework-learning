@@ -8,7 +8,7 @@ Library          Collections
 Variables        ../variables/config.py            # dynamic .py -> get_variables()
 Variables        ../data/feature_flags.json        # static .json -> keys become variables
 Library          ../variables/config.py            # same file as a library, to call get_variables
-Test Tags        data
+Test Tags        data    unit
 
 
 *** Variables ***

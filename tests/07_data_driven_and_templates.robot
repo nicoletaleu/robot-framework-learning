@@ -17,6 +17,7 @@ Documentation    Day 7 - Data-driven testing with TEST TEMPLATES.
 ...
 ...              Run with:  robot --outputdir results tests/07_data_driven_and_templates.robot
 Library          Collections
+Test Tags        unit
 
 
 *** Variables ***

@@ -11,7 +11,7 @@ Library          OperatingSystem
 Library          Collections
 Library          ../libraries/DataHelpers.py
 Suite Setup      Run The Demo Suite Under The Listener
-Test Tags        listeners
+Test Tags        listeners    unit
 
 
 *** Variables ***

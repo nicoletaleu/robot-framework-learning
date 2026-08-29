@@ -12,7 +12,7 @@ Library          Collections
 Library          ../libraries/DataHelpers.py
 Library          ../libraries/ResultHelpers.py
 Suite Setup      Run The Demo Suite, Then Rerun And Merge
-Test Tags        rerun
+Test Tags        rerun    unit
 
 
 *** Variables ***
