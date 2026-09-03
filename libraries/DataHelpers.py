@@ -16,6 +16,7 @@ import random
 import re
 import string
 from datetime import date
+from pathlib import Path
 
 from robot.api import logger
 from robot.api.deco import keyword, library
@@ -139,6 +140,22 @@ class DataHelpers:
         if not dot:
             return f"{filename}_{os.getpid()}"
         return f"{stem}_{os.getpid()}.{suffix}"
+
+    @keyword
+    def bump_counter(self, path: str) -> int:
+        """Increments a number kept in a file and returns the new value.
+
+        Day 24: real flakiness is not random, it just looks random - the same
+        code meets a different world each run. A counter on disk reproduces
+        that honestly: the test genuinely behaves differently from one run to
+        the next, but which run fails is knowable, so a suite ABOUT flakiness
+        is not itself flaky.
+        """
+        file = Path(path)
+        current = int(file.read_text()) if file.exists() else 0
+        current += 1
+        file.write_text(str(current))
+        return current
 
     # No @keyword -> not callable from a suite, despite the ordinary name.
     def slugify(self, text: str) -> str:

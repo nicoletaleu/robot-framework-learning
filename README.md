@@ -45,6 +45,11 @@ robot --include smoke tests/
 robot --include smokeANDapi tests/
 robot --exclude web tests/
 
+# shuffle the order to flush out tests that depend on each other.
+# the seed is printed in the report — reuse it to replay the same shuffle
+robot --randomize tests tests/
+robot --randomize tests:1 tests/
+
 # run against another environment (see variables/config.py)
 robot --variablefile variables/config.py:staging tests/
 
@@ -110,6 +115,17 @@ cases. Checking the other end is what turns a test of the conversation into a
 test of the system — and, symmetrically, a row the test planted itself proves
 nothing about the API, so neither end is worth much alone.
 
+Flakiness is not randomness — the code is identical every run, and what changes
+is the world it meets. `tests/24_flaky_tests.robot` runs a deliberately unstable
+suite seven ways and pins down two causes: a test that only passes after its
+neighbour, and one that reads state a previous run left on disk. Both are made
+reproducible, because a cause you can trigger on demand is a cause you can fix.
+`--randomize tests:1` is the tool worth remembering: it turns "fails sometimes"
+into a command someone else can run. The last two tests are the counterweight to
+Day 20 — `--rerunfailed` plus `rebot --merge` produce a green report with zero
+failures in it, and the cause is still sitting on disk, one run from doing it
+again.
+
 ## Tags
 Tags accumulate on their own. Before Day 23 this repo had 44 of them, most used
 exactly once, and 23 tests carrying none at all — which makes `--include` a
@@ -126,8 +142,8 @@ the repo, which lists every test and every tag in about two seconds without
 executing anything, and fails if a test slips through untagged or if `smoke`
 grows past a ceiling. A scheme nobody checks goes back to being debris.
 
-CI follows it: a pull request runs `--include smoke` — 43 tests, ~21s — and the
-full 150 run on the way into `main`.
+CI follows it: a pull request runs `--include smoke` — 47 tests, ~19s — and the
+full 157 run on the way into `main`.
 
 ## Progress
 - [x] Day 1 — first test running
@@ -153,10 +169,11 @@ full 150 run on the way into `main`.
 - [x] Day 21 — stubbing the service under test: a fake HTTP server the tests control
 - [x] Day 22 — checking the database behind the API: a POST that returns 201 and writes nothing
 - [x] Day 23 — tags as a strategy: one layer tag per test, smoke on every pull request
+- [x] Day 24 — a flaky test on purpose: finding the cause instead of retrying it away
 
 ## Next up
 A working list, not a contract — it gets reordered as I go, but it lives here so
 the next day is never a guess.
-- [ ] Day 24 — a flaky test on purpose: finding the cause instead of retrying it away
 - [ ] Day 25 — contract tests: keeping the stub honest about what the real API returns
 - [ ] Day 26 — what a failure report should contain: screenshots, page state, and the request that caused it
+- [ ] Day 27 — quarantining a known-flaky test without hiding it: a tag CI reports but does not fail on
