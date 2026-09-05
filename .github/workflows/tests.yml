@@ -9,6 +9,11 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch: # adds a "Run workflow" button in the Actions tab
+  # Day 25: the contract tests call the real API, so they get a slot of their
+  # own instead of a place on every push. Nightly is often enough to catch a
+  # provider changing shape, and it cannot make a pull request red.
+  schedule:
+    - cron: "0 6 * * *" # 06:00 UTC, daily
 
 jobs:
   robot:
@@ -65,12 +70,26 @@ jobs:
           --include smoke
           tests/
 
-      - name: Run every test (main, or on demand)
-        if: github.event_name != 'pull_request'
+      # Day 25: --exclude contract. Everything else here runs offline or against
+      # a stub, so a push is not at the mercy of somebody else's uptime.
+      - name: Run every test except the contract ones (main, or on demand)
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         run: >-
           pabot --processes 4 --outputdir results
           --variable HEADLESS:True
           --listener libraries/RunListener.py:2.0
+          --exclude contract
+          tests/
+
+      # The other half: does the real service still send what the stubs pretend
+      # it sends? A red run here means the stubs have gone stale, not that the
+      # change under test is broken - which is why it is on its own schedule.
+      - name: Check the contracts against the live API (nightly)
+        if: github.event_name == 'schedule'
+        run: >-
+          pabot --processes 4 --outputdir results
+          --variable HEADLESS:True
+          --include contract
           tests/
 
       # always() = upload even when the tests failed. That is exactly when I need

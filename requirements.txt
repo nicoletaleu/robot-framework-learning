@@ -3,3 +3,4 @@ robotframework-requests
 robotframework-browser
 robotframework-pabot
 robotframework-databaselibrary
+jsonschema

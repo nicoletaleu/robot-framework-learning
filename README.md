@@ -45,6 +45,12 @@ robot --include smoke tests/
 robot --include smokeANDapi tests/
 robot --exclude web tests/
 
+# everything that does not need the internet — what a push to main runs
+robot --exclude contract tests/
+
+# only the checks against the real API — what the nightly job runs
+robot --include contract tests/
+
 # shuffle the order to flush out tests that depend on each other.
 # the seed is printed in the report — reuse it to replay the same shuffle
 robot --randomize tests tests/
@@ -126,6 +132,15 @@ Day 20 — `--rerunfailed` plus `rebot --merge` produce a green report with zero
 failures in it, and the cause is still sitting on disk, one run from doing it
 again.
 
+Which leaves the hole Day 21 admitted to: a stub returns whatever it was told
+to, including a shape the real service stopped sending months ago. A **contract**
+closes it. `data/contracts/post.json` is written once and two different things
+are held to it — the stub, offline on every run, and the live API, on a nightly
+schedule. Green stubbed tests then carry two claims instead of one: my client
+handles this shape, *and* this shape is still what arrives. The contract is
+deliberately loose about fields it does not use, because a consumer that breaks
+when a provider adds a field is a consumer nobody can ship around.
+
 ## Tags
 Tags accumulate on their own. Before Day 23 this repo had 44 of them, most used
 exactly once, and 23 tests carrying none at all — which makes `--include` a
@@ -135,6 +150,7 @@ guess rather than a tool. The scheme now is deliberately small:
 |---|---|
 | `unit`, `api`, `web` | **layer** — every test carries exactly one, so the three add up to the repo and never overlap |
 | `smoke` | the subset that runs on every pull request: at least one per suite, and a minority overall |
+| `contract` | needs the real API. Kept off every push and given a nightly schedule of its own — a network check on the fast loop is a flaky test waiting to happen |
 | anything else | free-form feature tags (`login`, `iframe`, `database`) — useful for finding things, never for selecting a run |
 
 `tests/23_tag_strategy.robot` enforces all of that. It runs `robot --dryrun` over
@@ -142,8 +158,10 @@ the repo, which lists every test and every tag in about two seconds without
 executing anything, and fails if a test slips through untagged or if `smoke`
 grows past a ceiling. A scheme nobody checks goes back to being debris.
 
-CI follows it: a pull request runs `--include smoke` — 47 tests, ~19s — and the
-full 157 run on the way into `main`.
+CI follows it: a pull request runs `--include smoke` — 49 tests, ~20s. A push to
+`main` runs `--exclude contract` — 164 tests, ~60s, none of which need anything
+but this machine. The 2 contract tests run at 06:00 UTC on their own schedule,
+where a red run means the stubs have gone stale rather than the change is broken.
 
 ## Progress
 - [x] Day 1 — first test running
@@ -170,10 +188,11 @@ full 157 run on the way into `main`.
 - [x] Day 22 — checking the database behind the API: a POST that returns 201 and writes nothing
 - [x] Day 23 — tags as a strategy: one layer tag per test, smoke on every pull request
 - [x] Day 24 — a flaky test on purpose: finding the cause instead of retrying it away
+- [x] Day 25 — contract tests: one written shape, held against both the stub and the real API
 
 ## Next up
 A working list, not a contract — it gets reordered as I go, but it lives here so
 the next day is never a guess.
-- [ ] Day 25 — contract tests: keeping the stub honest about what the real API returns
 - [ ] Day 26 — what a failure report should contain: screenshots, page state, and the request that caused it
 - [ ] Day 27 — quarantining a known-flaky test without hiding it: a tag CI reports but does not fail on
+- [ ] Day 28 — the older live-API suites (08-10) still call the internet on every push: move them behind the stub and keep one contract test each
