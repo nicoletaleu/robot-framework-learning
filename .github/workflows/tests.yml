@@ -67,6 +67,7 @@ jobs:
           pabot --processes 4 --outputdir results
           --variable HEADLESS:True
           --listener libraries/RunListener.py:2.0
+          --listener libraries/FailureReporter.py
           --include smoke
           tests/
 
@@ -78,6 +79,7 @@ jobs:
           pabot --processes 4 --outputdir results
           --variable HEADLESS:True
           --listener libraries/RunListener.py:2.0
+          --listener libraries/FailureReporter.py
           --exclude contract
           tests/
 
@@ -89,9 +91,14 @@ jobs:
         run: >-
           pabot --processes 4 --outputdir results
           --variable HEADLESS:True
+          --listener libraries/FailureReporter.py
           --include contract
           tests/
 
+      # Day 26: every run carries FailureReporter, so a red run drops a JSON file
+      # per failed test into results/failures/ - which keyword broke, with what
+      # values, on what machine. That is the artefact worth reading first.
+      #
       # always() = upload even when the tests failed. That is exactly when I need
       # log.html to find out what went wrong.
       - name: Upload the reports

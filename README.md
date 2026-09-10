@@ -65,9 +65,10 @@ pabot --processes 4 --outputdir results tests/
 # split individual tests across processes, not just whole suites
 pabot --testlevelsplit --processes 4 --outputdir results tests/
 
-# attach the listener: tags every test slower than 0.5s and writes a
-# per-process listener_summary_*.json next to the report
-robot --listener libraries/RunListener.py:0.5 --outputdir results tests/
+# attach the listeners: one tags anything slower than 0.5s, the other writes
+# results/failures/<test>.json for every test that fails. Both are optional
+# and neither changes what runs
+robot --listener libraries/RunListener.py:0.5       --listener libraries/FailureReporter.py       --outputdir results tests/
 
 # after a red run — rerun only the tests that failed, then fold the result
 # back into the original report (rebot writes no output.xml unless asked)
@@ -141,6 +142,18 @@ handles this shape, *and* this shape is still what arrives. The contract is
 deliberately loose about fields it does not use, because a consumer that breaks
 when a provider adds a field is a consumer nobody can ship around.
 
+When something does go red, the console gives a message and little else.
+`libraries/FailureReporter.py` writes one JSON file per failed test instead:
+the keyword that actually broke — the innermost one, not the wrapper that
+reported it — with the values it was called with, the tags and process it ran
+under, any image the run captured, and the versions of the machine it ran on.
+The Browser library already screenshots on failure, so the picture was never
+the missing piece; the context around it was. One thing worth knowing came out
+of building it: Robot stores arguments exactly as they were *written*, so
+`output.xml` and `log.html` both show `${expected}` and never `42`. The values
+only survive in the failure message, or if something asks for them while they
+are still in scope.
+
 ## Tags
 Tags accumulate on their own. Before Day 23 this repo had 44 of them, most used
 exactly once, and 23 tests carrying none at all — which makes `--include` a
@@ -158,10 +171,11 @@ the repo, which lists every test and every tag in about two seconds without
 executing anything, and fails if a test slips through untagged or if `smoke`
 grows past a ceiling. A scheme nobody checks goes back to being debris.
 
-CI follows it: a pull request runs `--include smoke` — 49 tests, ~20s. A push to
-`main` runs `--exclude contract` — 164 tests, ~60s, none of which need anything
+CI follows it: a pull request runs `--include smoke` — 52 tests, ~21s. A push to
+`main` runs `--exclude contract` — 172 tests, ~64s, none of which need anything
 but this machine. The 2 contract tests run at 06:00 UTC on their own schedule,
 where a red run means the stubs have gone stale rather than the change is broken.
+All three carry the failure reporter, so a red run uploads its own explanation.
 
 ## Progress
 - [x] Day 1 — first test running
@@ -189,10 +203,11 @@ where a red run means the stubs have gone stale rather than the change is broken
 - [x] Day 23 — tags as a strategy: one layer tag per test, smoke on every pull request
 - [x] Day 24 — a flaky test on purpose: finding the cause instead of retrying it away
 - [x] Day 25 — contract tests: one written shape, held against both the stub and the real API
+- [x] Day 26 — what a failure report should contain, and why the screenshot was never the hard part
 
 ## Next up
 A working list, not a contract — it gets reordered as I go, but it lives here so
 the next day is never a guess.
-- [ ] Day 26 — what a failure report should contain: screenshots, page state, and the request that caused it
 - [ ] Day 27 — quarantining a known-flaky test without hiding it: a tag CI reports but does not fail on
 - [ ] Day 28 — the older live-API suites (08-10) still call the internet on every push: move them behind the stub and keep one contract test each
+- [ ] Day 29 — the web suites still hit an external site on every push: the last dependency this repo has on anyone else
