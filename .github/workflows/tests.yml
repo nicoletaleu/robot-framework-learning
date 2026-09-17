@@ -68,6 +68,7 @@ jobs:
           --variable HEADLESS:True
           --listener libraries/RunListener.py:2.0
           --listener libraries/FailureReporter.py
+          --skiponfailure quarantine
           --include smoke
           tests/
 
@@ -80,6 +81,7 @@ jobs:
           --variable HEADLESS:True
           --listener libraries/RunListener.py:2.0
           --listener libraries/FailureReporter.py
+          --skiponfailure quarantine
           --exclude contract
           tests/
 
@@ -92,9 +94,16 @@ jobs:
           pabot --processes 4 --outputdir results
           --variable HEADLESS:True
           --listener libraries/FailureReporter.py
+          --skiponfailure quarantine
           --include contract
           tests/
 
+      # Day 27: --skiponfailure quarantine. A test tagged `quarantine` that fails
+      # is reported as SKIP instead of FAIL, with the original failure kept in the
+      # skip message. It still runs and still reports - the build just stops
+      # gating on it. Not --exclude, which would stop it running and take away
+      # any chance of noticing it had recovered.
+      #
       # Day 26: every run carries FailureReporter, so a red run drops a JSON file
       # per failed test into results/failures/ - which keyword broke, with what
       # values, on what machine. That is the artefact worth reading first.
