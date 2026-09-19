@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "user",
+  "description": "What tests/api/ needs a user to look like. Day 25's rule applies: this lists what the tests depend on, not everything the service sends. The real /users/1 carries phone, website and company too, and none of them belong here because nothing reads them.",
+  "type": "object",
+  "required": ["id", "name", "username", "email", "address"],
+  "properties": {
+    "id": { "type": "integer", "minimum": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "username": { "type": "string", "minLength": 1 },
+    "email": { "type": "string", "pattern": "@" },
+    "address": {
+      "type": "object",
+      "required": ["city"],
+      "properties": { "city": { "type": "string", "minLength": 1 } }
+    }
+  }
+}

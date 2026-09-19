@@ -72,17 +72,24 @@ class StubServer:
         status: int = 200,
         json_body=None,
         delay: float = 0.0,
+        echo: bool = False,
     ) -> None:
         """Teaches the server one answer.
 
         `delay` holds the response back, which is how a client timeout gets
         tested without waiting on a real slow service.
+
+        `echo` sends the request body back as the response, the way an API that
+        accepted a write usually does. Day 28: without it, a test that asserts
+        on a canned PUT response is only asserting what it typed two lines
+        earlier.
         """
         with self._lock:
             self._stubs[(method.upper(), path)] = {
                 "status": status,
                 "json_body": json_body,
                 "delay": delay,
+                "echo": echo,
             }
 
     @keyword
@@ -156,7 +163,13 @@ class StubServer:
                     return
                 if rule["delay"]:
                     time.sleep(rule["delay"])
-                self._send(rule["status"], rule["json_body"])
+                body = rule["json_body"]
+                if rule["echo"]:
+                    sent = json.loads(raw) if raw else {}
+                    # Anything the stub was also told to return wins over the
+                    # echo, so a server-assigned id can be layered on top.
+                    body = {**sent, **(body or {})}
+                self._send(rule["status"], body)
 
             def _send(self, status, body):
                 payload = b"" if body is None else json.dumps(body).encode()

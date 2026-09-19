@@ -19,6 +19,7 @@ robot-framework/
 │   ├── web/        # UI tests
 │   └── api/        # API tests
 ├── resources/      # reusable keywords and variables (.resource)
+│                   #   stubbed_api.resource — the two sessions suites 08-10 share
 ├── libraries/      # my own keywords + listeners, written in Python (.py)
 ├── variables/      # environment config as a variable file (.py)
 ├── data/           # test data kept out of the suites (.csv, .json, .robot)
@@ -165,6 +166,19 @@ keeps reporting. `tests/27_quarantine.robot` proves each of those claims, and
 keeps the repo's own quarantine list short and explained, so the practice cannot
 rot into a place tests go to die.
 
+Day 28 finally paid off the oldest debt in the repo: suites 08-10 had called
+jsonplaceholder on every push since Day 8. Moving them behind the Day 21 stub
+made a push independent of anyone else's uptime — but the interesting part was
+not the speed. Rewriting each test forced the question *what was this actually
+checking?*, and several turned out to be checking the service rather than my
+client. "The list has 100 items" was an assertion about somebody else's fixture
+data. The header tests sent a header and asserted `200`, which would have passed
+with the header removed. Those are now assertions about the **request** — what
+left this machine — which is both the half I am responsible for and the half no
+live API can show me. Each suite keeps one live call, tagged `contract`, held to
+the same written shape as the nightly checks. 39 API tests now run offline in
+about four seconds.
+
 ## Tags
 Tags accumulate on their own. Before Day 23 this repo had 44 of them, most used
 exactly once, and 23 tests carrying none at all — which makes `--include` a
@@ -183,10 +197,11 @@ the repo, which lists every test and every tag in about two seconds without
 executing anything, and fails if a test slips through untagged or if `smoke`
 grows past a ceiling. A scheme nobody checks goes back to being debris.
 
-CI follows it: a pull request runs `--include smoke` — 56 tests, ~24s. A push to
-`main` runs `--exclude contract` — 180 tests, ~67s, none of which need anything
+CI follows it: a pull request runs `--include smoke` — 58 tests, ~31s. A push to
+`main` runs `--exclude contract` — 179 tests, ~86s, none of which need anything
 but this machine. The 2 contract tests run at 06:00 UTC on their own schedule,
 where a red run means the stubs have gone stale rather than the change is broken.
+There are 6 of those now, one or two per API suite.
 All three carry the failure reporter, so a red run uploads its own explanation.
 
 ## Progress
@@ -217,9 +232,10 @@ All three carry the failure reporter, so a red run uploads its own explanation.
 - [x] Day 25 — contract tests: one written shape, held against both the stub and the real API
 - [x] Day 26 — what a failure report should contain, and why the screenshot was never the hard part
 - [x] Day 27 — quarantine: a build that gates honestly while a known-flaky test keeps reporting
+- [x] Day 28 — suites 08-10 off the internet and behind the stub, one contract test each
 
 ## Next up
 A working list, not a contract — it gets reordered as I go, but it lives here so
 the next day is never a guess.
-- [ ] Day 28 — the older live-API suites (08-10) still call the internet on every push: move them behind the stub and keep one contract test each
 - [ ] Day 29 — the web suites still hit an external site on every push: the last dependency this repo has on anyone else
+- [ ] Day 30 — serve the pages those web tests need locally, and see what the suite was really testing
