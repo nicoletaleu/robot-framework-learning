@@ -1,19 +1,25 @@
 *** Settings ***
 Documentation    Day 29 - the pages the web suites need, served from this repo.
-...              Suites 11-15 drive the-internet.herokuapp.com. After Day 28 that is
-...              the last thing here that depends on someone else being up, and it is
-...              the expensive kind: an API call that fails is one red test, a page
-...              that fails to load takes a whole browser suite with it.
+...              Suites 11-15 used to drive the-internet.herokuapp.com. After Day 28
+...              that was the last thing here depending on someone else being up, and
+...              it was the expensive kind: an API call that fails is one red test, a
+...              page that fails to load takes a whole browser suite with it.
 ...              So data/pages/ holds the pages and libraries/PageServer.py serves
 ...              them. This suite tests the fixture itself. That is not ceremony - a
 ...              broken fixture does not announce itself, it just makes the suite that
 ...              uses it look broken, and I would spend the morning reading the wrong
 ...              log.html.
-...              Day 30 points suites 11-15 at this. Nothing has moved yet.
+...              Day 30 moved suites 11-15 onto it, so every check below now has five
+...              suites standing on it.
 ...              Run:  robot --outputdir results tests/web/29_local_pages.robot
 Library          Browser
 Library          RequestsLibrary
 Library          OperatingSystem
+# Append To List lives here, and the only place it is called is inside an IF
+# that never ran while every page was being served. --dryrun found it: without
+# this import, the first missing page would have crashed the test that exists
+# to name it.
+Library          Collections
 Library          ../../libraries/PageServer.py
 Suite Setup      Start The Local Site
 Suite Teardown   Stop The Local Site

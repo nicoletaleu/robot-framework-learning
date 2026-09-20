@@ -1,22 +1,28 @@
 *** Settings ***
-Documentation    Page Object for the login page of https://the-internet.herokuapp.com
+Documentation    Page Object for the login page.
 ...              A "page object" keeps LOCATORS and ACTIONS for one page in one file.
 ...              Why: when the page changes, you fix the selector HERE, not in 20 tests.
 ...              Tests then read like plain English: "Login With    tomsmith    ...".
+...              Day 30 took the address out of it. It used to hold
+...              ${BASE_URL} = https://the-internet.herokuapp.com and build
+...              ${LOGIN_URL} from it, which quietly made the page object own the
+...              environment as well as the page. The local site picks a free port at
+...              runtime, so that stopped being possible - and it should not have been
+...              a constant in the first place. A page object describes a page; where
+...              that page is deployed is somebody else's decision.
+...              ${BASE_URL} now comes from resources/local_site.resource.
 Library          Browser
 
 
 *** Variables ***
-${BASE_URL}             https://the-internet.herokuapp.com
 # --- Locators: every selector this page needs, named once. -----------------
-${LOGIN_URL}            ${BASE_URL}/login
 ${USERNAME_FIELD}       id=username
 ${PASSWORD_FIELD}       id=password
 ${SUBMIT_BUTTON}        button[type=submit]
 ${FLASH_MESSAGE}        id=flash
 # "text=Logout" would also match the paragraph mentioning logout - be specific.
 ${LOGOUT_BUTTON}        a[href="/logout"]
-# --- Known-good credentials for this practice site. ------------------------
+# --- Known-good credentials. ------------------------------------------------
 ${VALID_USER}           tomsmith
 ${VALID_PASSWORD}       SuperSecretPassword!
 
@@ -24,7 +30,9 @@ ${VALID_PASSWORD}       SuperSecretPassword!
 *** Keywords ***
 Open Login Page
     [Documentation]    Navigates to the login page and confirms we really got there.
-    Go To    ${LOGIN_URL}
+    ...                The URL is built here rather than stored, because ${BASE_URL}
+    ...                does not exist until the page server has started.
+    Go To    ${BASE_URL}/login
     Get Text    h2    ==    Login Page
 
 Login With

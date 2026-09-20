@@ -20,6 +20,7 @@ robot-framework/
 │   └── api/        # API tests
 ├── resources/      # reusable keywords and variables (.resource)
 │                   #   stubbed_api.resource — the two sessions suites 08-10 share
+│                   #   local_site.resource  — the page server suites 11-15 share
 ├── libraries/      # my own keywords + listeners, written in Python (.py)
 ├── variables/      # environment config as a variable file (.py)
 ├── data/           # test data kept out of the suites (.csv, .json, .robot)
@@ -82,10 +83,13 @@ After a run, open `results/report.html` in your browser. `pabot` writes each
 process into `results/pabot_results/` and merges them into the same
 `report.html`, so the reports look identical either way.
 
-On this repo four processes take the full run from ~116s to ~73s. It does not
-get much better than that: the slowest single suite is ~57s, and no number of
+On this repo four processes take the full run from ~44s to ~32s. It does not
+get much better than that: the slowest single suite is ~16s, and no number of
 processes can finish the run sooner than its longest suite. Splitting that suite
-up — or `--testlevelsplit` — is what buys the next step.
+up — or `--testlevelsplit` — is what buys the next step. The gap narrowed after
+Day 30 for a reason worth noticing: parallelism hides waiting, and most of what
+this suite used to wait for was the network. Take the waiting away and there is
+less left for the processes to overlap.
 
 A **listener** is the other half of that picture: a library waits to be called by
 a test, a listener is called by Robot around every suite and every test, and the
@@ -201,6 +205,37 @@ open answers 200, the two login failures stay distinguishable, a flash message i
 shown once and then cleared, and the hidden element really is hidden until its
 own script reveals it.
 
+Day 30 moved suites 11-15 onto it, and the move was cheap in the places the
+design was good and expensive exactly where it was not. Suite 13 changed by
+nothing at all — every edit landed in the page object, which is what page
+objects are for — except that the page object had been holding the site's
+address, and a page object has no business owning the environment. That came
+out. The base URL is now runtime data, because a server on a free port has no
+address anyone can write down in advance.
+
+Then the same question as Day 28, asked of the UI: *what was this really
+testing?* Two answers were uncomfortable. The table test asserted the first cell
+said "Smith" — an assertion about fixture data, and worse once the fixture is a
+file in this repo, because it looks like a test and cannot fail for any
+interesting reason. What is mine to get wrong in a table is the **locator**, and
+the way to get it wrong is off by one, so it now checks the first data row is not
+the header. The screenshot test had no assertion at all: it took a picture and
+ended, so a silent no-op would have passed it every time.
+
+The sharpest one was suite 15. Its delays now live in `data/pages/`, which means
+I choose them — and a wait test whose page answers instantly passes with the
+wait, without the wait, and with the wait deleted. So the suite opens with a test
+that clicks and looks *immediately*, and requires the element to still be
+unfinished. If that ever goes green-by-accident, every wait in the file has
+quietly stopped being load-bearing.
+
+`--dryrun` earned its keep here too: it resolves every keyword without executing
+anything, and it found an `Append To List` in the Day 29 suite with no
+`Collections` import — called only inside an `IF` that never ran while every page
+was being served, so the first missing page would have crashed the test whose job
+is to name it. It is a command to run, not a gate to add: two of suite 16's
+negative tests fail under `--dryrun` by design.
+
 ## Tags
 Tags accumulate on their own. Before Day 23 this repo had 44 of them, most used
 exactly once, and 23 tests carrying none at all — which makes `--include` a
@@ -219,12 +254,15 @@ the repo, which lists every test and every tag in about two seconds without
 executing anything, and fails if a test slips through untagged or if `smoke`
 grows past a ceiling. A scheme nobody checks goes back to being debris.
 
-CI follows it: a pull request runs `--include smoke` — 60 tests, ~34s. A push to
-`main` runs `--exclude contract` — 188 tests, ~116s. Suites 11-15 are still the
-exception to "none of this needs the internet"; Day 30 is where they move onto
-the local pages and that sentence becomes true. The 6 `contract` tests, one or
-two per API suite, run at 06:00 UTC on a schedule of their own, where a red run
-means the stubs have gone stale rather than that the change is broken.
+CI follows it: a pull request runs `--include smoke` — 60 tests, ~23s. A push to
+`main` runs `--exclude contract` — 189 tests in 45–60s, and since Day 30 not one
+of them touches the network. That was ~116s before the web suites came off the
+internet; most of the run was waiting on somebody else's server. It is a range
+rather than a number now because what is left is mostly browser startup, and
+that varies with whatever else the machine is doing.
+The 6 `contract` tests, one or two per API suite, run at 06:00 UTC on a schedule
+of their own, where a red run means the stubs have gone stale rather than that
+the change is broken.
 All three carry the failure reporter, so a red run uploads its own explanation.
 
 ## Progress
@@ -257,9 +295,15 @@ All three carry the failure reporter, so a red run uploads its own explanation.
 - [x] Day 27 — quarantine: a build that gates honestly while a known-flaky test keeps reporting
 - [x] Day 28 — suites 08-10 off the internet and behind the stub, one contract test each
 - [x] Day 29 — the site the web suites drive, served from `data/pages/` — and a suite that tests the fixture
+- [x] Day 30 — suites 11-15 onto the local site, and what each of them was really testing
 
 ## Next up
-A working list, not a contract — it gets reordered as I go, but it lives here so
-the next day is never a guess.
-- [ ] Day 30 — point suites 11-15 at the local site, and write down what each of them was really testing
-- [ ] after Day 30 the Robot track is done — `LEARNING-PLAN.md` picks up from P1
+The Robot track is done: 30 days, 189 tests, none of which need the internet.
+What remains is not more Robot Framework — it is the parts of the craft this
+repo cannot teach, and those live in [`LEARNING-PLAN.md`](LEARNING-PLAN.md),
+numbered `P1…` so they never get confused with the days above.
+- [ ] P1 — a Postman collection over the same API the suites here use
+- [ ] P2 — `newman` running it in GitHub Actions
+- [ ] P8–P10 — test design on paper: the gap that matters most, because
+      everything in this repo answers *does this work* and none of it answers
+      *what should be tested, and why that and not something else*

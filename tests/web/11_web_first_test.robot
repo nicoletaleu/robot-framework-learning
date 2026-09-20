@@ -1,69 +1,72 @@
 *** Settings ***
 Documentation    Day 11 - first browser test: open, click, type, assert.
-...              Uses Browser library (Playwright-based, auto-waits for elements).
-...              Setup once:  pip install robotframework-browser  &&  rfbrowser init
+...              Day 30 pointed it at the local site and made each test start from
+...              its own page. Both changes were overdue: the suite used to open one
+...              page in Suite Setup and let every test inherit whatever the last one
+...              left behind, so "click the link on the home page" only worked because
+...              it happened to run third.
+...              It also made the suite honest about what it proves. The title and the
+...              heading below now come from data/pages/index.html - a file in this
+...              repo - so asserting them is not checking that a site is correct. It
+...              is checking that the browser went where the test told it to and that
+...              the test can read what is on the screen. That is the skill Day 11 was
+...              actually learning.
 ...              Run:  robot --outputdir results tests/web/11_web_first_test.robot
 Library          Browser
-Suite Setup      Open Browser To Home Page
-Suite Teardown   Close Browser
-
-
-*** Variables ***
-${BASE_URL}      https://the-internet.herokuapp.com
-# ${HEADLESS} = True means an invisible browser (faster). Set False to watch what happens.
-${HEADLESS}      True
+Resource         ../../resources/local_site.resource
+Suite Setup      Open The Local Site
+Suite Teardown   Close The Local Site
+Test Setup       Open A Fresh Page
+Test Tags        web
 
 
 *** Test Cases ***
 Open A Page And Check Its Title
-    [Documentation]    Simplest test: page loaded and has the expected title.
-    [Tags]    web    smoke
-    ${title}=    Get Title
-    Should Be Equal    ${title}    The Internet
+    [Documentation]    The simplest thing a browser test can assert: we arrived, and
+    ...                the page is the one we asked for rather than an error page.
+    [Tags]    smoke
+    Get Title    ==    The Internet
 
 See That An Element Is Visible
-    [Documentation]    Check that a text/element actually shows on screen.
-    [Tags]    web
-    # 'h1' is the big heading on the page. Get Text reads its content.
-    ${heading}=    Get Text    h1
-    Should Be Equal    ${heading}    Welcome to the-internet
+    [Documentation]    Reading text off the screen - the other half of every UI
+    ...                assertion. Get Text waits for the element first.
+    Get Text    h1    ==    Welcome to the-internet
 
 Click A Link And Land On Another Page
-    [Documentation]    Navigation: click a link and verify you landed on the right page.
-    [Tags]    web    navigation
-    # Click the link with the exact text "Form Authentication".
+    [Documentation]    Navigation, and the first test here with something at stake:
+    ...                a click that silently does nothing looks exactly like a click
+    ...                that worked, until the URL is checked.
+    [Tags]    navigation
     Click    text=Form Authentication
-    # After the click, the URL must end with /login.
     ${url}=    Get Url
     Should End With    ${url}    /login
-    # ...and the new page has its own big heading.
     Get Text    h2    ==    Login Page
 
 Fill A Form And Log In Successfully
-    [Documentation]    Fill a form, submit and verify the success message.
-    [Tags]    web    form    login
+    [Documentation]    Fill two fields, submit, read the result. Worth being plain
+    ...                about: this is not a test of authentication. The password it
+    ...                sends is the one PageServer is written to accept. What it
+    ...                exercises is filling a form and following a redirect.
+    [Tags]    form    login
     Go To    ${BASE_URL}/login
-    # Fill Text writes into a field located by 'id'.
     Fill Text    id=username    tomsmith
     Fill Text    id=password    SuperSecretPassword!
-    # Press the submit button.
     Click    button[type=submit]
-    # The message area (#flash) must contain the login confirmation.
     Get Text    id=flash    contains    You logged into a secure area!
+    # The message alone is not proof - a page can say anything. The URL is the
+    # second, independent sign that the login actually went through.
+    ${url}=    Get Url
+    Should End With    ${url}    /secure
 
 A Wrong Password Shows An Error
-    [Documentation]    Negative case: wrong credentials -> error message, not success.
-    [Tags]    web    form    login    negative
+    [Documentation]    The negative case, and the one that stops the test above from
+    ...                passing by accident: a form that ignores its input entirely
+    ...                would pass one of these two, never both.
+    [Tags]    form    login    negative
     Go To    ${BASE_URL}/login
     Fill Text    id=username    tomsmith
     Fill Text    id=password    wrong-password
     Click    button[type=submit]
-    # The error message must appear.
     Get Text    id=flash    contains    Your password is invalid!
-
-
-*** Keywords ***
-Open Browser To Home Page
-    [Documentation]    Suite Setup: open one browser + page, reused by all tests.
-    New Browser    chromium    headless=${HEADLESS}
-    New Page    ${BASE_URL}
+    ${url}=    Get Url
+    Should End With    ${url}    /login

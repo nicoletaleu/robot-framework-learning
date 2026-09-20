@@ -10,6 +10,12 @@ suite variables, so ${BASE_URL} exists without being written in any .robot file.
 Why a .py and not a *** Variables *** table: the table cannot branch. Here the
 same suite runs against dev or staging by changing one argument - which is
 exactly what CI needs.
+
+Day 30 note: the URLs below are illustration, not configuration. No suite
+navigates to them any more - the web tests get their base URL at runtime from
+libraries/PageServer.py, because a server on a free port has no address to
+write down in advance. What tests/17_external_test_data.robot checks here is the
+mechanism, not the values.
 """
 
 ENVIRONMENTS = {
