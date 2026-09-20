@@ -54,6 +54,9 @@ robot --exclude contract tests/
 # only the checks against the real API — what the nightly job runs
 robot --include contract tests/
 
+# the web tests run headless by default — watch one instead
+robot --variable HEADLESS:False tests/web/
+
 # shuffle the order to flush out tests that depend on each other.
 # the seed is printed in the report — reuse it to replay the same shuffle
 robot --randomize tests tests/

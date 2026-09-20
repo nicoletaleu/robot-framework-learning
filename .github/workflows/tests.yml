@@ -39,6 +39,16 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r requirements.txt
 
+      # The browser binaries are the biggest download in this workflow and they
+      # only change when robotframework-browser does. requirements.txt is pinned,
+      # so hashing it is a precise key: same dependencies, same browsers, cache
+      # hit. A miss just downloads them as before.
+      - name: Cache the Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+
       # Downloads Chromium & co. Locally I ran this once; a CI runner is a brand
       # new machine every time, so it has to happen here too.
       - name: Install Playwright browsers
@@ -48,9 +58,10 @@ jobs:
       # at a time and merges everything into the same results/ folder, so the
       # artifact below is unchanged - only the wall-clock time drops.
       #
-      # Some web suites set ${HEADLESS} to False so I can watch the browser locally.
-      # A CI runner has no screen, so headed Chromium would not start at all.
-      # --variable overrides the value in every suite, without touching the files.
+      # ${HEADLESS} defaults to True since Day 30, so this is belt and braces
+      # rather than a fix: a CI runner has no screen, and headed Chromium would
+      # not start at all. Left in place because the day somebody commits
+      # HEADLESS:False to watch a run locally, CI should not go red for it.
       #
       # Day 19: --listener attaches RunListener to every worker. It tags anything
       # slower than 2s and writes a per-process listener_summary_*.json into

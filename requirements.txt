@@ -1,6 +1,14 @@
-robotframework
-robotframework-requests
-robotframework-browser
-robotframework-pabot
-robotframework-databaselibrary
-jsonschema
+# Pinned on purpose, and it took thirty days to earn the opinion.
+#
+# Unpinned, `pip install -r requirements.txt` installs whatever is newest on the
+# day CI runs, which means the build can go red with no change to any file in
+# this repo. That is the exact failure this repo spent Days 24-28 learning to
+# refuse: a test that fails for a reason nobody caused and nobody can reproduce.
+# The cost is that upgrades stop being automatic - `pip list --outdated` and a
+# deliberate bump, in its own commit, so a break has one obvious suspect.
+robotframework==7.4.2
+robotframework-requests==0.9.7
+robotframework-browser==20.0.0
+robotframework-pabot==5.2.2
+robotframework-databaselibrary==2.4.1
+jsonschema==4.26.0

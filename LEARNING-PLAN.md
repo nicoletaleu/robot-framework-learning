@@ -13,8 +13,9 @@ the README. Once P3 starts, this file moves to a new `qa-portfolio` repo.
 |---|---|
 | Framework design & maintenance | done — resources, page objects, listeners, pabot |
 | API testing | done — RequestsLibrary, stub server, contracts, DB checks |
-| Python | done — three custom libraries, one of them a listener |
+| Python | done — eight modules: two listeners, two servers, four helper libraries |
 | CI | done — GitHub Actions, three run paths, a nightly job |
+| Test isolation | done — Day 30: 189 tests, none of them touching the network |
 | **Test design on paper** | missing — everything so far is automation, nothing is a written test |
 | **A second automation stack** | missing — one tool deeply is not the same as knowing the trade-offs |
 | Performance testing | missing |
