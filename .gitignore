@@ -17,3 +17,6 @@ playwright-log.txt
 
 # pabot's cache of the last run's suite order and timings
 .pabotsuitenames
+
+# a stray probe file, if the traversal test in suite 29 ever dies mid-test
+traversal_probe.html

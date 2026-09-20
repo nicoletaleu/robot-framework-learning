@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>The Internet</title>
+</head>
+<body>
+<!--FLASH-->
+<h3>Dynamically Loaded Page Elements</h3>
+<h4>Example 1: Element on page that is hidden</h4>
+<div id="start"><button>Start</button></div>
+<div id="loading" style="display:none">Loading...</div>
+<!-- Already in the DOM, just invisible. That is the whole point of this page:
+     "attached" passes immediately here, so only "visible" is a real wait. -->
+<div id="finish" style="display:none"><h4>Hello World!</h4></div>
+<script>
+  document.querySelector('#start button').addEventListener('click', function () {
+    document.getElementById('start').style.display = 'none';
+    document.getElementById('loading').style.display = 'block';
+    window.setTimeout(function () {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('finish').style.display = 'block';
+    }, 1500);
+  });
+</script>
+</body>
+</html>

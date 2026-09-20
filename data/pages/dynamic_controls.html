@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>The Internet</title>
+</head>
+<body>
+<!--FLASH-->
+<h4>Dynamic Controls</h4>
+<form id="checkbox-example">
+  <h4>Remove/add</h4>
+  <span id="checkbox"><input type="checkbox"></span>
+  <button type="button">Remove</button>
+</form>
+<form id="input-example">
+  <h4>Enable/disable</h4>
+  <input type="text" disabled>
+  <button type="button">Enable</button>
+</form>
+<script>
+  // #message is created, not revealed. Only one exists at a time, which is
+  // what lets a test say `id=message` without Playwright complaining that the
+  // selector matches two elements.
+  function afterAWhile(form, change, text) {
+    var previous = document.getElementById('message');
+    if (previous) { previous.remove(); }
+    var button = form.querySelector('button');
+    button.disabled = true;
+    window.setTimeout(function () {
+      change();
+      button.disabled = false;
+      var message = document.createElement('p');
+      message.id = 'message';
+      message.textContent = text;
+      form.appendChild(message);
+    }, 1500);
+  }
+
+  document.querySelector('#checkbox-example button').addEventListener('click', function () {
+    afterAWhile(document.getElementById('checkbox-example'), function () {
+      var box = document.getElementById('checkbox');
+      if (box) { box.remove(); }
+    }, "It's gone!");
+  });
+
+  document.querySelector('#input-example button').addEventListener('click', function () {
+    afterAWhile(document.getElementById('input-example'), function () {
+      document.querySelector('#input-example input').disabled = false;
+    }, "It's enabled!");
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>The Internet</title>
+</head>
+<body>
+<!--FLASH-->
+<h3>JavaScript Alerts</h3>
+<ul>
+  <li><button type="button" onclick="jsAlert()">Click for JS Alert</button></li>
+  <li><button type="button" onclick="jsConfirm()">Click for JS Confirm</button></li>
+  <li><button type="button" onclick="jsPrompt()">Click for JS Prompt</button></li>
+</ul>
+<p id="result"></p>
+<script>
+  function say(text) { document.getElementById('result').textContent = text; }
+  function jsAlert() {
+    window.alert('I am a JS Alert');
+    say('You successfully clicked an alert');
+  }
+  function jsConfirm() {
+    var accepted = window.confirm('I am a JS Confirm');
+    say('You clicked: ' + (accepted ? 'Ok' : 'Cancel'));
+  }
+  function jsPrompt() {
+    var answer = window.prompt('I am a JS prompt');
+    say('You entered: ' + answer);
+  }
+</script>
+</body>
+</html>

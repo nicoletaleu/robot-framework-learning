@@ -23,6 +23,7 @@ robot-framework/
 ├── libraries/      # my own keywords + listeners, written in Python (.py)
 ├── variables/      # environment config as a variable file (.py)
 ├── data/           # test data kept out of the suites (.csv, .json, .robot)
+│   └── pages/      #   the site the web tests drive, served locally (.html)
 ├── results/        # generated reports (log.html, report.html) — git-ignored
 └── README.md
 ```
@@ -81,8 +82,8 @@ After a run, open `results/report.html` in your browser. `pabot` writes each
 process into `results/pabot_results/` and merges them into the same
 `report.html`, so the reports look identical either way.
 
-On this repo four processes take the full run from ~104s to ~54s. It does not
-get much better than that: the slowest single suite is ~48s, and no number of
+On this repo four processes take the full run from ~116s to ~73s. It does not
+get much better than that: the slowest single suite is ~57s, and no number of
 processes can finish the run sooner than its longest suite. Splitting that suite
 up — or `--testlevelsplit` — is what buys the next step.
 
@@ -179,6 +180,27 @@ live API can show me. Each suite keeps one live call, tagged `contract`, held to
 the same written shape as the nightly checks. 39 API tests now run offline in
 about four seconds.
 
+That left the web suites, which were the same problem and the worse version of
+it: a failed API call is one red test, a page that will not load takes the whole
+browser suite with it, and browser tests are slow enough that a slow network
+reads as flakiness. So the pages live in `data/pages/` now and
+`libraries/PageServer.py` serves them — port 0 and a daemon thread, the same
+lessons as the stub. A static file server would not have been enough: logging
+in, logging out and uploading a file are the three things the suites do that a
+page cannot answer by itself, so the server handles exactly those and nothing
+else. It is a fixture, not a copy of the site.
+
+Which is worth saying plainly, because it is the same trap Day 25 found on the
+API side: a login test against this server is not testing authentication — the
+password it accepts is written twenty lines above the code that checks it. It
+tests my locators, my waits and my page object. That is what suites 11-15 were
+always testing; the live site only made it look like more. A fixture does not
+announce when it breaks, it just makes the suite using it look broken, so
+`tests/web/29_local_pages.robot` tests the fixture itself: every page the suites
+open answers 200, the two login failures stay distinguishable, a flash message is
+shown once and then cleared, and the hidden element really is hidden until its
+own script reveals it.
+
 ## Tags
 Tags accumulate on their own. Before Day 23 this repo had 44 of them, most used
 exactly once, and 23 tests carrying none at all — which makes `--include` a
@@ -197,11 +219,12 @@ the repo, which lists every test and every tag in about two seconds without
 executing anything, and fails if a test slips through untagged or if `smoke`
 grows past a ceiling. A scheme nobody checks goes back to being debris.
 
-CI follows it: a pull request runs `--include smoke` — 58 tests, ~31s. A push to
-`main` runs `--exclude contract` — 179 tests, ~86s, none of which need anything
-but this machine. The 2 contract tests run at 06:00 UTC on their own schedule,
-where a red run means the stubs have gone stale rather than the change is broken.
-There are 6 of those now, one or two per API suite.
+CI follows it: a pull request runs `--include smoke` — 60 tests, ~34s. A push to
+`main` runs `--exclude contract` — 188 tests, ~116s. Suites 11-15 are still the
+exception to "none of this needs the internet"; Day 30 is where they move onto
+the local pages and that sentence becomes true. The 6 `contract` tests, one or
+two per API suite, run at 06:00 UTC on a schedule of their own, where a red run
+means the stubs have gone stale rather than that the change is broken.
 All three carry the failure reporter, so a red run uploads its own explanation.
 
 ## Progress
@@ -233,9 +256,10 @@ All three carry the failure reporter, so a red run uploads its own explanation.
 - [x] Day 26 — what a failure report should contain, and why the screenshot was never the hard part
 - [x] Day 27 — quarantine: a build that gates honestly while a known-flaky test keeps reporting
 - [x] Day 28 — suites 08-10 off the internet and behind the stub, one contract test each
+- [x] Day 29 — the site the web suites drive, served from `data/pages/` — and a suite that tests the fixture
 
 ## Next up
 A working list, not a contract — it gets reordered as I go, but it lives here so
 the next day is never a guess.
-- [ ] Day 29 — the web suites still hit an external site on every push: the last dependency this repo has on anyone else
-- [ ] Day 30 — serve the pages those web tests need locally, and see what the suite was really testing
+- [ ] Day 30 — point suites 11-15 at the local site, and write down what each of them was really testing
+- [ ] after Day 30 the Robot track is done — `LEARNING-PLAN.md` picks up from P1
