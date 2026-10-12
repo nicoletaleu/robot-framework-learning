@@ -22,7 +22,7 @@ jobs:
     steps:
       # The runner starts empty - it knows nothing about my code until I check it out.
       - name: Check out the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -141,7 +141,7 @@ jobs:
       # visible in the commits before the deletion - which is the case worth
       # scanning for at all.
       - name: Check out the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
