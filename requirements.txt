@@ -6,7 +6,7 @@
 # refuse: a test that fails for a reason nobody caused and nobody can reproduce.
 # The cost is that upgrades stop being automatic - `pip list --outdated` and a
 # deliberate bump, in its own commit, so a break has one obvious suspect.
-robotframework==7.4.2
+robotframework==7.5
 robotframework-requests==0.9.7
 robotframework-browser==20.6.0
 robotframework-pabot==5.2.2
