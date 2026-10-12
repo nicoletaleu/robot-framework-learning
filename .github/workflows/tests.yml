@@ -44,7 +44,7 @@ jobs:
       # so hashing it is a precise key: same dependencies, same browsers, cache
       # hit. A miss just downloads them as before.
       - name: Cache the Playwright browsers
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
