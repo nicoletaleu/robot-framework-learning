@@ -127,3 +127,54 @@ jobs:
         with:
           name: robot-results
           path: results/
+
+  # Two checks that need neither a browser nor the network, kept in their own
+  # job so they report separately and run while the suite is still going. Both
+  # came out of an outside review; what changed is where they run and how they
+  # are pinned.
+  checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      # fetch-depth: 0 = the whole history. The default shallow clone has one
+      # commit, and a secret that was committed and then deleted is only
+      # visible in the commits before the deletion - which is the case worth
+      # scanning for at all.
+      - name: Check out the repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      # robot --dryrun: parses every suite and resolves every keyword and
+      # variable without executing anything. Seconds, and it catches the class
+      # of mistake that otherwise waits for the line to finally run - a missing
+      # library import, a keyword that does not exist, a mistyped variable.
+      - name: Dry-run the whole suite
+        run: python scripts/lint_robot.py
+
+      # Pinned to an exact version, for the same reason requirements.txt is:
+      # `curl | bash` from the installer on master upgrades itself whenever
+      # upstream releases, so CI can go red with no change to any file here.
+      # A bump is then a commit, with one obvious suspect.
+      - name: Install gitleaks
+        env:
+          GITLEAKS_VERSION: 8.30.1
+        run: |
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            | sudo tar -xz -C /usr/local/bin gitleaks
+          gitleaks version
+
+      # `git`, not `detect`: detect was removed, and `git` is the mode that
+      # reads history rather than only the files as they are now. --redact so a
+      # finding does not leak the secret into a public build log.
+      - name: Scan the history for secrets
+        run: gitleaks git . --redact --no-banner
