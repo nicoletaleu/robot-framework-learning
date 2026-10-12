@@ -250,6 +250,7 @@ guess rather than a tool. The scheme now is deliberately small:
 | `smoke` | the subset that runs on every pull request: at least one per suite, and a minority overall |
 | `quarantine` | a known failure with a cause nobody can fix this week. `--skiponfailure quarantine` turns its failure into a SKIP, so the build stops gating on it while it keeps running and keeps reporting. Must say why, in its documentation |
 | `contract` | needs the real API. Kept off every push and given a nightly schedule of its own — a network check on the fast loop is a flaky test waiting to happen |
+| `no-dryrun` | the two tests that assert a bad keyword name and a bad argument type are rejected. A dry run resolves names and converts arguments, so it hits the very error they expect and reports it as a failure. Excluded from the dry-run check, never from a real run |
 | anything else | free-form feature tags (`login`, `iframe`, `database`) — useful for finding things, never for selecting a run |
 
 `tests/23_tag_strategy.robot` enforces all of that. It runs `robot --dryrun` over
@@ -267,6 +268,21 @@ The 6 `contract` tests, one or two per API suite, run at 06:00 UTC on a schedule
 of their own, where a red run means the stubs have gone stale rather than that
 the change is broken.
 All three carry the failure reporter, so a red run uploads its own explanation.
+
+A second job runs beside them, and it needs neither a browser nor the network:
+
+- **`python scripts/lint_robot.py`** — `robot --dryrun` over every suite. It
+  parses and resolves everything without executing it, in seconds, and it is the
+  cheapest check here: Day 29 found an `Append To List` with no `Collections`
+  imported, inside an `IF` branch that had never executed.
+- **`gitleaks git . --redact`** — scans the **history**, not just the files as
+  they stand, because a secret that was committed and then deleted is only
+  visible in the commits before the deletion. Pinned to an exact version, for
+  the same reason `requirements.txt` is.
+
+`.github/dependabot.yml` is the other half of that pinning: one pull request per
+weekly update, for both pip and the actions the workflows use, so staying pinned
+does not mean staying still.
 
 ## Progress
 - [x] Day 1 — first test running
