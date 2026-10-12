@@ -123,7 +123,7 @@ jobs:
       # log.html to find out what went wrong.
       - name: Upload the reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: robot-results
           path: results/
