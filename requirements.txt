@@ -8,7 +8,7 @@
 # deliberate bump, in its own commit, so a break has one obvious suspect.
 robotframework==7.4.2
 robotframework-requests==0.9.7
-robotframework-browser==20.0.0
+robotframework-browser==20.6.0
 robotframework-pabot==5.2.2
 robotframework-databaselibrary==2.4.1
 jsonschema==4.26.0
