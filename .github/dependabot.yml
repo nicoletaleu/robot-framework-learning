@@ -1,0 +1,28 @@
+# The other half of pinning requirements.txt.
+#
+# Pinning bought reproducibility: CI cannot go red because somebody upstream
+# released this morning. The cost is that upgrades stop happening at all, and a
+# suite sitting on a year-old Robot Framework is its own kind of broken. This is
+# what pays that cost back - one pull request per update, each one a commit with
+# a single obvious suspect, which is the whole point of having pinned.
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - python
+
+  # The workflows pin action versions too - checkout@v4, setup-python@v5 - and
+  # those go stale in exactly the same way.
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - github-actions
