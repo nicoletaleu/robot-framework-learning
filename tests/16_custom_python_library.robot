@@ -48,6 +48,11 @@ Type Hints Convert My Arguments
 
 A Bad Argument Type Fails With A Readable Error
     [Documentation]    The flip side: garbage is rejected before my code runs.
+    ...                Tagged no-dryrun: --dryrun converts arguments without running
+    ...                anything, so it hits the same ValueError this test is asserting
+    ...                and reports it as a failure. The test is right and the dry run
+    ...                is right - they cannot both be satisfied in one pass.
+    [Tags]    no-dryrun
     Run Keyword And Expect Error    *Argument 'length' got value 'abc' that cannot be converted to integer*
     ...    Random String Of Length    abc
 
@@ -88,6 +93,10 @@ An Invalid Phone Number Fails The Test With My Own Message
 
 Only Decorated Methods Are Exposed As Keywords
     [Documentation]    slugify() has no underscore and no @keyword - so suites cannot call it.
+    ...                Tagged no-dryrun for the same reason as above: a dry run resolves
+    ...                keyword names, and "no keyword with that name" is exactly what
+    ...                this test wants to happen.
+    [Tags]    no-dryrun
     Run Keyword And Expect Error    No keyword with name 'Slugify' found.
     ...    Slugify    Hello World
 
