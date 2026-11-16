@@ -1,6 +1,6 @@
 # Robot Framework — Test Automation Learning
 
-[![robot tests](https://github.com/nicoletalucia/robot-framework-learning/actions/workflows/tests.yml/badge.svg)](https://github.com/nicoletalucia/robot-framework-learning/actions/workflows/tests.yml)
+[![robot tests](https://github.com/nicoletaleu/robot-framework-learning/actions/workflows/tests.yml/badge.svg)](https://github.com/nicoletaleu/robot-framework-learning/actions/workflows/tests.yml)
 
 A repository where I learn test automation with **Robot Framework** (Python).
 
